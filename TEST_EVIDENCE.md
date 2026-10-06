@@ -1,7 +1,7 @@
 # Test Evidence
 
 - **Base API URL:** `http://localhost:8787/api`
-- **Run at:** 2026-10-06T06:36:28Z
+- **Run at:** 2026-10-06T06:48:30Z
 - **Result:** 40 passed, 0 failed, 40 total
 - **How:** `npm run test:curl` ([tests/curl-tests.sh](tests/curl-tests.sh)) runs each request with `curl`, records the real response, and compares the status code with the expected one. The bookings table is emptied through the API before the run.
 
@@ -16,7 +16,23 @@ curl -s -X GET "$BASE_URL/equipment"
 ```
 
 ```json
-[{"id":"eq-1","name":"Projector A","location":"Building 1"},{"id":"eq-2","name":"Camera Canon EOS R6","location":"Building 2"},{"id":"eq-3","name":"Meeting Room M-301","location":"Building 3"}]
+[
+  {
+    "id": "eq-1",
+    "name": "Projector A",
+    "location": "Building 1"
+  },
+  {
+    "id": "eq-2",
+    "name": "Camera Canon EOS R6",
+    "location": "Building 2"
+  },
+  {
+    "id": "eq-3",
+    "name": "Meeting Room M-301",
+    "location": "Building 3"
+  }
+]
 ```
 
 ## Create (POST /bookings)
@@ -26,11 +42,28 @@ curl -s -X GET "$BASE_URL/equipment"
 Expected `201`, got `201`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Class presentation"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-10-20T09:00:00.000Z",
+  "endAt": "2026-10-20T11:00:00.000Z",
+  "purpose": "Class presentation"
+}'
 ```
 
 ```json
-{"id":"7f7936a6-afff-4332-bfb4-5952130a7918","equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Class presentation","createdAt":"2026-10-06T06:36:28.634Z","updatedAt":"2026-10-06T06:36:28.634Z"}
+{
+  "id": "4354ca8f-b9bf-42d7-abd5-060e189dfa14",
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-10-20T09:00:00.000Z",
+  "endAt": "2026-10-20T11:00:00.000Z",
+  "purpose": "Class presentation",
+  "createdAt": "2026-10-06T06:48:30.270Z",
+  "updatedAt": "2026-10-06T06:48:30.270Z"
+}
 ```
 
 ### 3. Back-to-back booking 11:00–12:00Z on eq-1 is allowed — **PASS**
@@ -38,11 +71,28 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `201`, got `201`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Malee Sukjai","startAt":"2026-10-20T11:00:00.000Z","endAt":"2026-10-20T12:00:00.000Z","purpose":"Seminar"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Malee Sukjai",
+  "startAt": "2026-10-20T11:00:00.000Z",
+  "endAt": "2026-10-20T12:00:00.000Z",
+  "purpose": "Seminar"
+}'
 ```
 
 ```json
-{"id":"69e3e8cf-4870-4746-b83a-05b55ae34b9a","equipmentId":"eq-1","borrowerName":"Malee Sukjai","startAt":"2026-10-20T11:00:00.000Z","endAt":"2026-10-20T12:00:00.000Z","purpose":"Seminar","createdAt":"2026-10-06T06:36:28.672Z","updatedAt":"2026-10-06T06:36:28.672Z"}
+{
+  "id": "628a9248-46e8-4e28-9dc8-f405ba753634",
+  "equipmentId": "eq-1",
+  "borrowerName": "Malee Sukjai",
+  "startAt": "2026-10-20T11:00:00.000Z",
+  "endAt": "2026-10-20T12:00:00.000Z",
+  "purpose": "Seminar",
+  "createdAt": "2026-10-06T06:48:30.363Z",
+  "updatedAt": "2026-10-06T06:48:30.363Z"
+}
 ```
 
 ### 4. Same time on different equipment (eq-2) is allowed — **PASS**
@@ -50,11 +100,28 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `201`, got `201`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-2","borrowerName":"Anan Dee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Photo shoot"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-2",
+  "borrowerName": "Anan Dee",
+  "startAt": "2026-10-20T09:00:00.000Z",
+  "endAt": "2026-10-20T11:00:00.000Z",
+  "purpose": "Photo shoot"
+}'
 ```
 
 ```json
-{"id":"6f29be14-d3bb-4a0e-9009-29735b55bf1f","equipmentId":"eq-2","borrowerName":"Anan Dee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Photo shoot","createdAt":"2026-10-06T06:36:28.712Z","updatedAt":"2026-10-06T06:36:28.712Z"}
+{
+  "id": "ae46db9b-b78c-48da-8378-56419c7836d2",
+  "equipmentId": "eq-2",
+  "borrowerName": "Anan Dee",
+  "startAt": "2026-10-20T09:00:00.000Z",
+  "endAt": "2026-10-20T11:00:00.000Z",
+  "purpose": "Photo shoot",
+  "createdAt": "2026-10-06T06:48:30.457Z",
+  "updatedAt": "2026-10-06T06:48:30.457Z"
+}
 ```
 
 ### 5. Time given with +07:00 offset is stored in UTC — **PASS**
@@ -62,11 +129,28 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `201`, got `201`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-3","borrowerName":"Niran Ok","startAt":"2026-10-21T09:00:00+07:00","endAt":"2026-10-21T10:30:00+07:00","purpose":"Team meeting"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-3",
+  "borrowerName": "Niran Ok",
+  "startAt": "2026-10-21T09:00:00+07:00",
+  "endAt": "2026-10-21T10:30:00+07:00",
+  "purpose": "Team meeting"
+}'
 ```
 
 ```json
-{"id":"05745c85-9ec1-4e30-b32d-dfab058aa548","equipmentId":"eq-3","borrowerName":"Niran Ok","startAt":"2026-10-21T02:00:00.000Z","endAt":"2026-10-21T03:30:00.000Z","purpose":"Team meeting","createdAt":"2026-10-06T06:36:28.727Z","updatedAt":"2026-10-06T06:36:28.727Z"}
+{
+  "id": "740e83ec-f802-4c61-ba2f-0201bff6ffdc",
+  "equipmentId": "eq-3",
+  "borrowerName": "Niran Ok",
+  "startAt": "2026-10-21T02:00:00.000Z",
+  "endAt": "2026-10-21T03:30:00.000Z",
+  "purpose": "Team meeting",
+  "createdAt": "2026-10-06T06:48:30.522Z",
+  "updatedAt": "2026-10-06T06:48:30.522Z"
+}
 ```
 
 ## Read bookings
@@ -80,7 +164,48 @@ curl -s -X GET "$BASE_URL/bookings"
 ```
 
 ```json
-[{"id":"6f29be14-d3bb-4a0e-9009-29735b55bf1f","equipmentId":"eq-2","borrowerName":"Anan Dee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Photo shoot","createdAt":"2026-10-06T06:36:28.712Z","updatedAt":"2026-10-06T06:36:28.712Z"},{"id":"7f7936a6-afff-4332-bfb4-5952130a7918","equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Class presentation","createdAt":"2026-10-06T06:36:28.634Z","updatedAt":"2026-10-06T06:36:28.634Z"},{"id":"69e3e8cf-4870-4746-b83a-05b55ae34b9a","equipmentId":"eq-1","borrowerName":"Malee Sukjai","startAt":"2026-10-20T11:00:00.000Z","endAt":"2026-10-20T12:00:00.000Z","purpose":"Seminar","createdAt":"2026-10-06T06:36:28.672Z","updatedAt":"2026-10-06T06:36:28.672Z"},{"id":"05745c85-9ec1-4e30-b32d-dfab058aa548","equipmentId":"eq-3","borrowerName":"Niran Ok","startAt":"2026-10-21T02:00:00.000Z","endAt":"2026-10-21T03:30:00.000Z","purpose":"Team meeting","createdAt":"2026-10-06T06:36:28.727Z","updatedAt":"2026-10-06T06:36:28.727Z"}]
+[
+  {
+    "id": "4354ca8f-b9bf-42d7-abd5-060e189dfa14",
+    "equipmentId": "eq-1",
+    "borrowerName": "Somchai Jaidee",
+    "startAt": "2026-10-20T09:00:00.000Z",
+    "endAt": "2026-10-20T11:00:00.000Z",
+    "purpose": "Class presentation",
+    "createdAt": "2026-10-06T06:48:30.270Z",
+    "updatedAt": "2026-10-06T06:48:30.270Z"
+  },
+  {
+    "id": "ae46db9b-b78c-48da-8378-56419c7836d2",
+    "equipmentId": "eq-2",
+    "borrowerName": "Anan Dee",
+    "startAt": "2026-10-20T09:00:00.000Z",
+    "endAt": "2026-10-20T11:00:00.000Z",
+    "purpose": "Photo shoot",
+    "createdAt": "2026-10-06T06:48:30.457Z",
+    "updatedAt": "2026-10-06T06:48:30.457Z"
+  },
+  {
+    "id": "628a9248-46e8-4e28-9dc8-f405ba753634",
+    "equipmentId": "eq-1",
+    "borrowerName": "Malee Sukjai",
+    "startAt": "2026-10-20T11:00:00.000Z",
+    "endAt": "2026-10-20T12:00:00.000Z",
+    "purpose": "Seminar",
+    "createdAt": "2026-10-06T06:48:30.363Z",
+    "updatedAt": "2026-10-06T06:48:30.363Z"
+  },
+  {
+    "id": "740e83ec-f802-4c61-ba2f-0201bff6ffdc",
+    "equipmentId": "eq-3",
+    "borrowerName": "Niran Ok",
+    "startAt": "2026-10-21T02:00:00.000Z",
+    "endAt": "2026-10-21T03:30:00.000Z",
+    "purpose": "Team meeting",
+    "createdAt": "2026-10-06T06:48:30.522Z",
+    "updatedAt": "2026-10-06T06:48:30.522Z"
+  }
+]
 ```
 
 ### 7. Get one booking by id — **PASS**
@@ -88,11 +213,20 @@ curl -s -X GET "$BASE_URL/bookings"
 Expected `200`, got `200`
 
 ```bash
-curl -s -X GET "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918"
+curl -s -X GET "$BASE_URL/bookings/4354ca8f-b9bf-42d7-abd5-060e189dfa14"
 ```
 
 ```json
-{"id":"7f7936a6-afff-4332-bfb4-5952130a7918","equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Class presentation","createdAt":"2026-10-06T06:36:28.634Z","updatedAt":"2026-10-06T06:36:28.634Z"}
+{
+  "id": "4354ca8f-b9bf-42d7-abd5-060e189dfa14",
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-10-20T09:00:00.000Z",
+  "endAt": "2026-10-20T11:00:00.000Z",
+  "purpose": "Class presentation",
+  "createdAt": "2026-10-06T06:48:30.270Z",
+  "updatedAt": "2026-10-06T06:48:30.270Z"
+}
 ```
 
 ### 8. Get a booking that does not exist — **PASS**
@@ -104,7 +238,9 @@ curl -s -X GET "$BASE_URL/bookings/does-not-exist"
 ```
 
 ```json
-{"error":"Booking not found: does-not-exist"}
+{
+  "error": "Booking not found: does-not-exist"
+}
 ```
 
 ## Validation errors (400)
@@ -114,11 +250,18 @@ curl -s -X GET "$BASE_URL/bookings/does-not-exist"
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee"
+}'
 ```
 
 ```json
-{"error":"Missing required field(s): startAt, endAt, purpose"}
+{
+  "error": "Missing required field(s): startAt, endAt, purpose"
+}
 ```
 
 ### 10. startAt after endAt — **PASS**
@@ -126,11 +269,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-22T11:00:00.000Z","endAt":"2026-10-22T09:00:00.000Z","purpose":"Backwards"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-10-22T11:00:00.000Z",
+  "endAt": "2026-10-22T09:00:00.000Z",
+  "purpose": "Backwards"
+}'
 ```
 
 ```json
-{"error":"startAt must be before endAt"}
+{
+  "error": "startAt must be before endAt"
+}
 ```
 
 ### 11. startAt equal to endAt (zero length) — **PASS**
@@ -138,11 +291,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-22T09:00:00.000Z","endAt":"2026-10-22T09:00:00.000Z","purpose":"Zero length"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-10-22T09:00:00.000Z",
+  "endAt": "2026-10-22T09:00:00.000Z",
+  "purpose": "Zero length"
+}'
 ```
 
 ```json
-{"error":"startAt must be before endAt"}
+{
+  "error": "startAt must be before endAt"
+}
 ```
 
 ### 12. equipmentId that does not exist — **PASS**
@@ -150,11 +313,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-999","borrowerName":"Somchai Jaidee","startAt":"2026-10-22T09:00:00.000Z","endAt":"2026-10-22T10:00:00.000Z","purpose":"Ghost equipment"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-999",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-10-22T09:00:00.000Z",
+  "endAt": "2026-10-22T10:00:00.000Z",
+  "purpose": "Ghost equipment"
+}'
 ```
 
 ```json
-{"error":"equipmentId does not exist: eq-999"}
+{
+  "error": "equipmentId does not exist: eq-999"
+}
 ```
 
 ### 13. Malformed JSON body — **PASS**
@@ -162,11 +335,15 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId": "eq-1",'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{"equipmentId": "eq-1",'
 ```
 
 ```json
-{"error":"Request body must be valid JSON"}
+{
+  "error": "Request body must be valid JSON"
+}
 ```
 
 ### 14. Wrong types (number / boolean) — **PASS**
@@ -174,11 +351,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":123,"startAt":"2026-10-22T09:00:00.000Z","endAt":"2026-10-22T10:00:00.000Z","purpose":true}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": 123,
+  "startAt": "2026-10-22T09:00:00.000Z",
+  "endAt": "2026-10-22T10:00:00.000Z",
+  "purpose": true
+}'
 ```
 
 ```json
-{"error":"borrowerName must be a string"}
+{
+  "error": "borrowerName must be a string"
+}
 ```
 
 ### 15. Blank borrowerName — **PASS**
@@ -186,11 +373,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"   ","startAt":"2026-10-22T09:00:00.000Z","endAt":"2026-10-22T10:00:00.000Z","purpose":"Blank name"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "   ",
+  "startAt": "2026-10-22T09:00:00.000Z",
+  "endAt": "2026-10-22T10:00:00.000Z",
+  "purpose": "Blank name"
+}'
 ```
 
 ```json
-{"error":"borrowerName must not be empty"}
+{
+  "error": "borrowerName must not be empty"
+}
 ```
 
 ### 16. Impossible date 2026-02-30 — **PASS**
@@ -198,11 +395,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-02-30T09:00:00.000Z","endAt":"2026-02-30T10:00:00.000Z","purpose":"No such day"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-02-30T09:00:00.000Z",
+  "endAt": "2026-02-30T10:00:00.000Z",
+  "purpose": "No such day"
+}'
 ```
 
 ```json
-{"error":"startAt is not a real date/time: 2026-02-30T09:00:00.000Z"}
+{
+  "error": "startAt is not a real date/time: 2026-02-30T09:00:00.000Z"
+}
 ```
 
 ### 17. Date-time without timezone — **PASS**
@@ -210,11 +417,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-22T09:00:00","endAt":"2026-10-22T10:00:00","purpose":"Ambiguous"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-10-22T09:00:00",
+  "endAt": "2026-10-22T10:00:00",
+  "purpose": "Ambiguous"
+}'
 ```
 
 ```json
-{"error":"startAt must be an ISO 8601 date-time with a timezone, e.g. 2026-10-20T09:00:00.000Z"}
+{
+  "error": "startAt must be an ISO 8601 date-time with a timezone, e.g. 2026-10-20T09:00:00.000Z"
+}
 ```
 
 ### 18. Unknown field (typo startTime) — **PASS**
@@ -222,11 +439,22 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startTime":"2026-10-22T09:00:00.000Z","startAt":"2026-10-22T09:00:00.000Z","endAt":"2026-10-22T10:00:00.000Z","purpose":"Typo"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startTime": "2026-10-22T09:00:00.000Z",
+  "startAt": "2026-10-22T09:00:00.000Z",
+  "endAt": "2026-10-22T10:00:00.000Z",
+  "purpose": "Typo"
+}'
 ```
 
 ```json
-{"error":"Unknown field(s): startTime. Allowed: equipmentId, borrowerName, startAt, endAt, purpose"}
+{
+  "error": "Unknown field(s): startTime. Allowed: equipmentId, borrowerName, startAt, endAt, purpose"
+}
 ```
 
 ### 19. Body is a JSON array, not an object — **PASS**
@@ -234,11 +462,19 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `400`, got `400`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '[1,2,3]'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '[
+  1,
+  2,
+  3
+]'
 ```
 
 ```json
-{"error":"Request body must be a JSON object"}
+{
+  "error": "Request body must be a JSON object"
+}
 ```
 
 ## Overlap conflicts (409)
@@ -248,11 +484,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '[1,
 Expected `409`, got `409`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somsak Rakdee","startAt":"2026-10-20T10:00:00.000Z","endAt":"2026-10-20T12:00:00.000Z","purpose":"Clash"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somsak Rakdee",
+  "startAt": "2026-10-20T10:00:00.000Z",
+  "endAt": "2026-10-20T12:00:00.000Z",
+  "purpose": "Clash"
+}'
 ```
 
 ```json
-{"error":"Equipment eq-1 is already booked for an overlapping time"}
+{
+  "error": "Equipment eq-1 is already booked for an overlapping time"
+}
 ```
 
 ### 21. Booking fully inside an existing one (09:30–10:00Z) — **PASS**
@@ -260,11 +506,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `409`, got `409`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somsak Rakdee","startAt":"2026-10-20T09:30:00.000Z","endAt":"2026-10-20T10:00:00.000Z","purpose":"Inside"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somsak Rakdee",
+  "startAt": "2026-10-20T09:30:00.000Z",
+  "endAt": "2026-10-20T10:00:00.000Z",
+  "purpose": "Inside"
+}'
 ```
 
 ```json
-{"error":"Equipment eq-1 is already booked for an overlapping time"}
+{
+  "error": "Equipment eq-1 is already booked for an overlapping time"
+}
 ```
 
 ### 22. Booking that covers an existing one (08:00–13:00Z) — **PASS**
@@ -272,11 +528,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `409`, got `409`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somsak Rakdee","startAt":"2026-10-20T08:00:00.000Z","endAt":"2026-10-20T13:00:00.000Z","purpose":"Around"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somsak Rakdee",
+  "startAt": "2026-10-20T08:00:00.000Z",
+  "endAt": "2026-10-20T13:00:00.000Z",
+  "purpose": "Around"
+}'
 ```
 
 ```json
-{"error":"Equipment eq-1 is already booked for an overlapping time"}
+{
+  "error": "Equipment eq-1 is already booked for an overlapping time"
+}
 ```
 
 ### 23. Overlap written as +07:00 (15:00+07:00 = 08:00Z, overlaps 09:00Z) — **PASS**
@@ -284,11 +550,21 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `409`, got `409`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Somsak Rakdee","startAt":"2026-10-20T15:00:00+07:00","endAt":"2026-10-20T17:00:00+07:00","purpose":"Offset clash"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Somsak Rakdee",
+  "startAt": "2026-10-20T15:00:00+07:00",
+  "endAt": "2026-10-20T17:00:00+07:00",
+  "purpose": "Offset clash"
+}'
 ```
 
 ```json
-{"error":"Equipment eq-1 is already booked for an overlapping time"}
+{
+  "error": "Equipment eq-1 is already booked for an overlapping time"
+}
 ```
 
 ## Update (PATCH /bookings/:id)
@@ -298,11 +574,24 @@ curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"e
 Expected `200`, got `200`
 
 ```bash
-curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'Content-Type: application/json' -d '{"purpose":"Final project presentation"}'
+curl -s -X PATCH "$BASE_URL/bookings/4354ca8f-b9bf-42d7-abd5-060e189dfa14" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "purpose": "Final project presentation"
+}'
 ```
 
 ```json
-{"id":"7f7936a6-afff-4332-bfb4-5952130a7918","equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Final project presentation","createdAt":"2026-10-06T06:36:28.634Z","updatedAt":"2026-10-06T06:36:28.850Z"}
+{
+  "id": "4354ca8f-b9bf-42d7-abd5-060e189dfa14",
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-10-20T09:00:00.000Z",
+  "endAt": "2026-10-20T11:00:00.000Z",
+  "purpose": "Final project presentation",
+  "createdAt": "2026-10-06T06:48:30.270Z",
+  "updatedAt": "2026-10-06T06:48:31.717Z"
+}
 ```
 
 ### 25. Move booking 30 min earlier (overlaps only its own old slot) — **PASS**
@@ -310,11 +599,25 @@ curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'C
 Expected `200`, got `200`
 
 ```bash
-curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'Content-Type: application/json' -d '{"startAt":"2026-10-20T08:30:00.000Z","endAt":"2026-10-20T10:30:00.000Z"}'
+curl -s -X PATCH "$BASE_URL/bookings/4354ca8f-b9bf-42d7-abd5-060e189dfa14" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "startAt": "2026-10-20T08:30:00.000Z",
+  "endAt": "2026-10-20T10:30:00.000Z"
+}'
 ```
 
 ```json
-{"id":"7f7936a6-afff-4332-bfb4-5952130a7918","equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T08:30:00.000Z","endAt":"2026-10-20T10:30:00.000Z","purpose":"Final project presentation","createdAt":"2026-10-06T06:36:28.634Z","updatedAt":"2026-10-06T06:36:28.856Z"}
+{
+  "id": "4354ca8f-b9bf-42d7-abd5-060e189dfa14",
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-10-20T08:30:00.000Z",
+  "endAt": "2026-10-20T10:30:00.000Z",
+  "purpose": "Final project presentation",
+  "createdAt": "2026-10-06T06:48:30.270Z",
+  "updatedAt": "2026-10-06T06:48:31.785Z"
+}
 ```
 
 ### 26. Extend into the next booking → conflict — **PASS**
@@ -322,11 +625,17 @@ curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'C
 Expected `409`, got `409`
 
 ```bash
-curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'Content-Type: application/json' -d '{"endAt":"2026-10-20T11:30:00.000Z"}'
+curl -s -X PATCH "$BASE_URL/bookings/4354ca8f-b9bf-42d7-abd5-060e189dfa14" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "endAt": "2026-10-20T11:30:00.000Z"
+}'
 ```
 
 ```json
-{"error":"Equipment eq-1 is already booked for an overlapping time"}
+{
+  "error": "Equipment eq-1 is already booked for an overlapping time"
+}
 ```
 
 ### 27. Set endAt before the stored startAt — **PASS**
@@ -334,11 +643,17 @@ curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'C
 Expected `400`, got `400`
 
 ```bash
-curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'Content-Type: application/json' -d '{"endAt":"2026-10-20T08:00:00.000Z"}'
+curl -s -X PATCH "$BASE_URL/bookings/4354ca8f-b9bf-42d7-abd5-060e189dfa14" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "endAt": "2026-10-20T08:00:00.000Z"
+}'
 ```
 
 ```json
-{"error":"startAt must be before endAt"}
+{
+  "error": "startAt must be before endAt"
+}
 ```
 
 ### 28. Move to equipment that does not exist — **PASS**
@@ -346,11 +661,17 @@ curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'C
 Expected `400`, got `400`
 
 ```bash
-curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-999"}'
+curl -s -X PATCH "$BASE_URL/bookings/4354ca8f-b9bf-42d7-abd5-060e189dfa14" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-999"
+}'
 ```
 
 ```json
-{"error":"equipmentId does not exist: eq-999"}
+{
+  "error": "equipmentId does not exist: eq-999"
+}
 ```
 
 ### 29. Empty update body {} — **PASS**
@@ -358,11 +679,15 @@ curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'C
 Expected `400`, got `400`
 
 ```bash
-curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'Content-Type: application/json' -d '{}'
+curl -s -X PATCH "$BASE_URL/bookings/4354ca8f-b9bf-42d7-abd5-060e189dfa14" \
+  -H 'Content-Type: application/json' \
+  -d '{}'
 ```
 
 ```json
-{"error":"Provide at least one field to update: equipmentId, borrowerName, startAt, endAt, purpose"}
+{
+  "error": "Provide at least one field to update: equipmentId, borrowerName, startAt, endAt, purpose"
+}
 ```
 
 ### 30. Update a booking that does not exist — **PASS**
@@ -370,11 +695,17 @@ curl -s -X PATCH "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918" -H 'C
 Expected `404`, got `404`
 
 ```bash
-curl -s -X PATCH "$BASE_URL/bookings/does-not-exist" -H 'Content-Type: application/json' -d '{"purpose":"x"}'
+curl -s -X PATCH "$BASE_URL/bookings/does-not-exist" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "purpose": "x"
+}'
 ```
 
 ```json
-{"error":"Booking not found: does-not-exist"}
+{
+  "error": "Booking not found: does-not-exist"
+}
 ```
 
 ### 31. Get booking after updates (shows saved changes) — **PASS**
@@ -382,11 +713,20 @@ curl -s -X PATCH "$BASE_URL/bookings/does-not-exist" -H 'Content-Type: applicati
 Expected `200`, got `200`
 
 ```bash
-curl -s -X GET "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918"
+curl -s -X GET "$BASE_URL/bookings/4354ca8f-b9bf-42d7-abd5-060e189dfa14"
 ```
 
 ```json
-{"id":"7f7936a6-afff-4332-bfb4-5952130a7918","equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T08:30:00.000Z","endAt":"2026-10-20T10:30:00.000Z","purpose":"Final project presentation","createdAt":"2026-10-06T06:36:28.634Z","updatedAt":"2026-10-06T06:36:28.856Z"}
+{
+  "id": "4354ca8f-b9bf-42d7-abd5-060e189dfa14",
+  "equipmentId": "eq-1",
+  "borrowerName": "Somchai Jaidee",
+  "startAt": "2026-10-20T08:30:00.000Z",
+  "endAt": "2026-10-20T10:30:00.000Z",
+  "purpose": "Final project presentation",
+  "createdAt": "2026-10-06T06:48:30.270Z",
+  "updatedAt": "2026-10-06T06:48:31.785Z"
+}
 ```
 
 ## Delete (DELETE /bookings/:id)
@@ -396,7 +736,7 @@ curl -s -X GET "$BASE_URL/bookings/7f7936a6-afff-4332-bfb4-5952130a7918"
 Expected `204`, got `204`
 
 ```bash
-curl -s -X DELETE "$BASE_URL/bookings/69e3e8cf-4870-4746-b83a-05b55ae34b9a"
+curl -s -X DELETE "$BASE_URL/bookings/628a9248-46e8-4e28-9dc8-f405ba753634"
 ```
 
 ```json
@@ -408,11 +748,13 @@ curl -s -X DELETE "$BASE_URL/bookings/69e3e8cf-4870-4746-b83a-05b55ae34b9a"
 Expected `404`, got `404`
 
 ```bash
-curl -s -X GET "$BASE_URL/bookings/69e3e8cf-4870-4746-b83a-05b55ae34b9a"
+curl -s -X GET "$BASE_URL/bookings/628a9248-46e8-4e28-9dc8-f405ba753634"
 ```
 
 ```json
-{"error":"Booking not found: 69e3e8cf-4870-4746-b83a-05b55ae34b9a"}
+{
+  "error": "Booking not found: 628a9248-46e8-4e28-9dc8-f405ba753634"
+}
 ```
 
 ### 34. Delete it again — **PASS**
@@ -420,11 +762,13 @@ curl -s -X GET "$BASE_URL/bookings/69e3e8cf-4870-4746-b83a-05b55ae34b9a"
 Expected `404`, got `404`
 
 ```bash
-curl -s -X DELETE "$BASE_URL/bookings/69e3e8cf-4870-4746-b83a-05b55ae34b9a"
+curl -s -X DELETE "$BASE_URL/bookings/628a9248-46e8-4e28-9dc8-f405ba753634"
 ```
 
 ```json
-{"error":"Booking not found: 69e3e8cf-4870-4746-b83a-05b55ae34b9a"}
+{
+  "error": "Booking not found: 628a9248-46e8-4e28-9dc8-f405ba753634"
+}
 ```
 
 ### 35. Slot freed by delete can be booked again — **PASS**
@@ -432,11 +776,28 @@ curl -s -X DELETE "$BASE_URL/bookings/69e3e8cf-4870-4746-b83a-05b55ae34b9a"
 Expected `201`, got `201`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-1","borrowerName":"Malee Sukjai","startAt":"2026-10-20T11:00:00.000Z","endAt":"2026-10-20T12:00:00.000Z","purpose":"Rebooked"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-1",
+  "borrowerName": "Malee Sukjai",
+  "startAt": "2026-10-20T11:00:00.000Z",
+  "endAt": "2026-10-20T12:00:00.000Z",
+  "purpose": "Rebooked"
+}'
 ```
 
 ```json
-{"id":"efc1dab1-b819-44bf-b5c5-e2b9b620c643","equipmentId":"eq-1","borrowerName":"Malee Sukjai","startAt":"2026-10-20T11:00:00.000Z","endAt":"2026-10-20T12:00:00.000Z","purpose":"Rebooked","createdAt":"2026-10-06T06:36:28.921Z","updatedAt":"2026-10-06T06:36:28.921Z"}
+{
+  "id": "df424ed2-57bf-4414-a180-108aa87e8afb",
+  "equipmentId": "eq-1",
+  "borrowerName": "Malee Sukjai",
+  "startAt": "2026-10-20T11:00:00.000Z",
+  "endAt": "2026-10-20T12:00:00.000Z",
+  "purpose": "Rebooked",
+  "createdAt": "2026-10-06T06:48:32.308Z",
+  "updatedAt": "2026-10-06T06:48:32.308Z"
+}
 ```
 
 ## Security and robustness
@@ -450,7 +811,9 @@ curl -s -X GET "$BASE_URL/bookings/x'%20OR%20'1'%3D'1"
 ```
 
 ```json
-{"error":"Booking not found: x' OR '1'='1"}
+{
+  "error": "Booking not found: x' OR '1'='1"
+}
 ```
 
 ### 37. SQL injection text in a field is stored as plain text — **PASS**
@@ -458,11 +821,28 @@ curl -s -X GET "$BASE_URL/bookings/x'%20OR%20'1'%3D'1"
 Expected `201`, got `201`
 
 ```bash
-curl -s -X POST "$BASE_URL/bookings" -H 'Content-Type: application/json' -d '{"equipmentId":"eq-2","borrowerName":"Robert'); DROP TABLE bookings;--","startAt":"2026-10-23T09:00:00.000Z","endAt":"2026-10-23T10:00:00.000Z","purpose":"Injection test"}'
+curl -s -X POST "$BASE_URL/bookings" \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "equipmentId": "eq-2",
+  "borrowerName": "Robert'\''); DROP TABLE bookings;--",
+  "startAt": "2026-10-23T09:00:00.000Z",
+  "endAt": "2026-10-23T10:00:00.000Z",
+  "purpose": "Injection test"
+}'
 ```
 
 ```json
-{"id":"14f945a3-cf8b-4d51-9132-dd782577c5fd","equipmentId":"eq-2","borrowerName":"Robert'); DROP TABLE bookings;--","startAt":"2026-10-23T09:00:00.000Z","endAt":"2026-10-23T10:00:00.000Z","purpose":"Injection test","createdAt":"2026-10-06T06:36:28.934Z","updatedAt":"2026-10-06T06:36:28.934Z"}
+{
+  "id": "e69bf8b4-84d8-43d6-aae5-9234b6f3b0ae",
+  "equipmentId": "eq-2",
+  "borrowerName": "Robert'); DROP TABLE bookings;--",
+  "startAt": "2026-10-23T09:00:00.000Z",
+  "endAt": "2026-10-23T10:00:00.000Z",
+  "purpose": "Injection test",
+  "createdAt": "2026-10-06T06:48:32.411Z",
+  "updatedAt": "2026-10-06T06:48:32.411Z"
+}
 ```
 
 ### 38. bookings table still exists after injection attempt — **PASS**
@@ -474,7 +854,58 @@ curl -s -X GET "$BASE_URL/bookings"
 ```
 
 ```json
-[{"id":"7f7936a6-afff-4332-bfb4-5952130a7918","equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T08:30:00.000Z","endAt":"2026-10-20T10:30:00.000Z","purpose":"Final project presentation","createdAt":"2026-10-06T06:36:28.634Z","updatedAt":"2026-10-06T06:36:28.856Z"},{"id":"6f29be14-d3bb-4a0e-9009-29735b55bf1f","equipmentId":"eq-2","borrowerName":"Anan Dee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Photo shoot","createdAt":"2026-10-06T06:36:28.712Z","updatedAt":"2026-10-06T06:36:28.712Z"},{"id":"efc1dab1-b819-44bf-b5c5-e2b9b620c643","equipmentId":"eq-1","borrowerName":"Malee Sukjai","startAt":"2026-10-20T11:00:00.000Z","endAt":"2026-10-20T12:00:00.000Z","purpose":"Rebooked","createdAt":"2026-10-06T06:36:28.921Z","updatedAt":"2026-10-06T06:36:28.921Z"},{"id":"05745c85-9ec1-4e30-b32d-dfab058aa548","equipmentId":"eq-3","borrowerName":"Niran Ok","startAt":"2026-10-21T02:00:00.000Z","endAt":"2026-10-21T03:30:00.000Z","purpose":"Team meeting","createdAt":"2026-10-06T06:36:28.727Z","updatedAt":"2026-10-06T06:36:28.727Z"},{"id":"14f945a3-cf8b-4d51-9132-dd782577c5fd","equipmentId":"eq-2","borrowerName":"Robert'); DROP TABLE bookings;--","startAt":"2026-10-23T09:00:00.000Z","endAt":"2026-10-23T10:00:00.000Z","purpose":"Injection test","createdAt":"2026-10-06T06:36:28.934Z","updatedAt":"2026-10-06T06:36:28.934Z"}]
+[
+  {
+    "id": "4354ca8f-b9bf-42d7-abd5-060e189dfa14",
+    "equipmentId": "eq-1",
+    "borrowerName": "Somchai Jaidee",
+    "startAt": "2026-10-20T08:30:00.000Z",
+    "endAt": "2026-10-20T10:30:00.000Z",
+    "purpose": "Final project presentation",
+    "createdAt": "2026-10-06T06:48:30.270Z",
+    "updatedAt": "2026-10-06T06:48:31.785Z"
+  },
+  {
+    "id": "ae46db9b-b78c-48da-8378-56419c7836d2",
+    "equipmentId": "eq-2",
+    "borrowerName": "Anan Dee",
+    "startAt": "2026-10-20T09:00:00.000Z",
+    "endAt": "2026-10-20T11:00:00.000Z",
+    "purpose": "Photo shoot",
+    "createdAt": "2026-10-06T06:48:30.457Z",
+    "updatedAt": "2026-10-06T06:48:30.457Z"
+  },
+  {
+    "id": "df424ed2-57bf-4414-a180-108aa87e8afb",
+    "equipmentId": "eq-1",
+    "borrowerName": "Malee Sukjai",
+    "startAt": "2026-10-20T11:00:00.000Z",
+    "endAt": "2026-10-20T12:00:00.000Z",
+    "purpose": "Rebooked",
+    "createdAt": "2026-10-06T06:48:32.308Z",
+    "updatedAt": "2026-10-06T06:48:32.308Z"
+  },
+  {
+    "id": "740e83ec-f802-4c61-ba2f-0201bff6ffdc",
+    "equipmentId": "eq-3",
+    "borrowerName": "Niran Ok",
+    "startAt": "2026-10-21T02:00:00.000Z",
+    "endAt": "2026-10-21T03:30:00.000Z",
+    "purpose": "Team meeting",
+    "createdAt": "2026-10-06T06:48:30.522Z",
+    "updatedAt": "2026-10-06T06:48:30.522Z"
+  },
+  {
+    "id": "e69bf8b4-84d8-43d6-aae5-9234b6f3b0ae",
+    "equipmentId": "eq-2",
+    "borrowerName": "Robert'); DROP TABLE bookings;--",
+    "startAt": "2026-10-23T09:00:00.000Z",
+    "endAt": "2026-10-23T10:00:00.000Z",
+    "purpose": "Injection test",
+    "createdAt": "2026-10-06T06:48:32.411Z",
+    "updatedAt": "2026-10-06T06:48:32.411Z"
+  }
+]
 ```
 
 ### 39. Unknown route returns a JSON 404 — **PASS**
@@ -486,7 +917,9 @@ curl -s -X GET "$BASE_URL/nope"
 ```
 
 ```json
-{"error":"Route not found: GET /api/nope"}
+{
+  "error": "Route not found: GET /api/nope"
+}
 ```
 
 ## Concurrent overlapping requests

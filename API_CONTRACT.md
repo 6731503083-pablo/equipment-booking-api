@@ -20,7 +20,11 @@ All request and response bodies are JSON (`Content-Type: application/json`).
 ### Equipment
 
 ```json
-{ "id": "eq-1", "name": "Projector A", "location": "Building 1" }
+{
+  "id": "eq-1",
+  "name": "Projector A",
+  "location": "Building 1"
+}
 ```
 
 The seed data contains `eq-1` (Projector A), `eq-2` (Camera Canon EOS R6) and `eq-3` (Meeting Room M-301).

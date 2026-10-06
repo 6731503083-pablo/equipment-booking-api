@@ -5,12 +5,16 @@
 
 ## Prompts
 
-| # | Prompt (as typed) | What the AI did |
+| # | Prompt (paraphrased) | What the AI did |
 |---|---|---|
-| 1 | "read two md files in this directory" | Read `exam_brief_en.md` and `rubric_en.md` and summarised the requirements. It pointed out that `curl_test_guide.md`, `quality_gate.md` and the starter repo were referenced but missing. |
-| 2 | Pasted the brief's Scenario section ("this is also provided") | Confirmed it matched the brief and asked about the starter repository. |
-| 3 | "i just need you to do everything for this test ok?" | Built the whole submission (details below). |
-
+| 1 | Read the exam brief and rubric in this folder and summarise the requirements. | Read `exam_brief_en.md` and `rubric_en.md` and summarised the endpoints, business rules, deliverables and marking. It pointed out that `curl_test_guide.md`, `quality_gate.md` and the starter repo were referenced but missing. |
+| 2 | Here is the Scenario section of the brief as extra context. | Confirmed it matched the brief and asked about the starter repository. |
+| 3 | Produce the complete submission for the test, covering: | Worked through the parts below in order. |
+| 3a | Implement the API to the contract: schema, seed equipment, booking CRUD, validation and the overlap rule. | Set up Hono + D1 (copied from my `mini-lab-d1` project), wrote the migration and the first version, and committed it as `v1-snapshot`. |
+| 3b | Review the first version against the Quality Gate and fix what it finds. | Probed v1 with edge-case curl requests, found 6 issues (timezone overlap bug, impossible dates, check-then-insert race, non-JSON errors, type coercion, undocumented decisions), and fixed them in v2. |
+| 3c | Test the API with curl and record evidence. | Wrote a 40-case curl suite and ran it against both versions: v1 32/40, v2 40/40. |
+| 3d | Write the required documentation. | Wrote the README, API contract, schema/ERD, Quality Gate review and this log. |
+| 4 | Make the JSON in the markdown files easier to read. | Changed the test script to pretty-print request and response bodies, and regenerated both evidence files. |
 ## What the AI produced, and what was used
 
 | Output | Used? | Notes |

@@ -8,6 +8,9 @@ OUT="${OUT:-TEST_EVIDENCE.md}"
 PASS=0; FAIL=0; N=0
 LAST_BODY=""
 
+# Pretty-print JSON with 2-space indent. Input that isn't valid JSON (e.g. the malformed-body test) is printed unchanged.
+pretty() { node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log(JSON.stringify(JSON.parse(s),null,2))}catch{process.stdout.write(s.endsWith("\n")?s:s+"\n")}})'; }
+
 json_field() { node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const v=JSON.parse(s)[process.argv[1]];console.log(v??"")}catch{console.log("")}})' "$1"; }
 
 # run "<title>" <expected status> <METHOD> <path> [json body]
@@ -18,7 +21,10 @@ run() {
   local shown="curl -s -X $method \"\$BASE_URL$path\""
   if [ -n "$body" ]; then
     args+=(-H 'Content-Type: application/json' --data-raw "$body")
-    shown+=" -H 'Content-Type: application/json' -d '$body'"
+    # Shown as a multi-line, copy-pasteable command; a ' inside the body is escaped as '\''.
+    local shown_body
+    shown_body=$(printf '%s' "$body" | pretty | sed "s/'/'\\\\''/g")
+    shown+=$' \\\n  -H \'Content-Type: application/json\' \\\n  -d \''"$shown_body"\'
   fi
   local raw status
   raw=$(curl "${args[@]}")
@@ -37,7 +43,7 @@ run() {
     echo '```'
     echo
     echo '```json'
-    if [ -n "$LAST_BODY" ]; then echo "$LAST_BODY"; else echo "(empty body)"; fi
+    if [ -n "$LAST_BODY" ]; then printf '%s' "$LAST_BODY" | pretty; else echo "(empty body)"; fi
     echo '```'
     echo
   } >> "$OUT"

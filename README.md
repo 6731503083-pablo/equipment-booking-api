@@ -29,7 +29,13 @@ curl -s http://localhost:8787/api/equipment
 
 curl -s -X POST http://localhost:8787/api/bookings \
   -H 'Content-Type: application/json' \
-  -d '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Class presentation"}'
+  -d '{
+    "equipmentId": "eq-1",
+    "borrowerName": "Somchai Jaidee",
+    "startAt": "2026-10-20T09:00:00.000Z",
+    "endAt": "2026-10-20T11:00:00.000Z",
+    "purpose": "Class presentation"
+  }'
 ```
 
 ## Endpoints
