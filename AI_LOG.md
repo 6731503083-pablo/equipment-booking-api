@@ -15,6 +15,7 @@
 | 3c | Test the API with curl and record evidence. | Wrote a 40-case curl suite and ran it against both versions: v1 32/40, v2 40/40. |
 | 3d | Write the required documentation. | Wrote the README, API contract, schema/ERD, Quality Gate review and this log. |
 | 4 | Make the JSON in the markdown files easier to read. | Changed the test script to pretty-print request and response bodies, and regenerated both evidence files. |
+| 5 | Here are the instructor's Quality Gate checklist and cURL test guide. Align the work with them. | Added the guide's 9 steps unchanged to the test suite: they pass on both versions, and the final suite is 49/49 (v1: 41/49). Restructured `QUALITY_GATE_REVIEW.md` to the gate's areas and table format, and added a final run through the checklist and a submission decision. |
 ## What the AI produced, and what was used
 
 | Output | Used? | Notes |
@@ -24,16 +25,16 @@
 | v1 API, `src/index.ts` (snapshot `v1-snapshot`) | Replaced by v2 | Kept in git history as the "before" for the Quality Gate. |
 | Edge-case probes of v1 | Yes | They found the timezone overlap bug, the 500 on bad JSON and type coercion. |
 | v2 API: `src/index.ts`, `src/validation.ts` | Yes | |
-| `tests/curl-tests.sh` (40 curl cases) | Yes | |
+| `tests/curl-tests.sh` (49 curl cases, incl. the 9 instructor guide steps) | Yes | |
 | `API_CONTRACT.md`, `SCHEMA.md`, `QUALITY_GATE_REVIEW.md`, `README.md`, this log | Yes | |
 
 ## Points where AI output was checked rather than trusted
 
 - **Date parsing.** Before writing the validator, `Date.parse` was tested in Node. It showed that `2026-02-30` rolls over to March 2 and that a time with no timezone is read in local time. That evidence drove finding 2.
-- **The tests themselves.** The full suite was run against the v1 snapshot as well. It fails 8 cases there, which shows the tests can detect the bugs they claim to cover, and that a final "40/40 passed" isn't an empty result.
+- **The tests themselves.** The full suite was run against the v1 snapshot as well. It fails 8 cases there, which shows the tests can detect the bugs they claim to cover, and that a final "49/49 passed" isn't an empty result.
 - **Database claims.** `SCHEMA.md` says the foreign key and the `CHECK` constraint are enforced. Both were tried directly against local D1 with invalid rows, and both were rejected.
-- **SQL injection.** Every `prepare(...)` call was reviewed for concatenated request data (none), and injection strings were sent in tests 36–38.
-- **A limitation the AI reported rather than overclaimed.** The parallel-request test (40) can't prove race safety on local `wrangler dev`, and `QUALITY_GATE_REVIEW.md` says so.
+- **SQL injection.** Every `prepare(...)` call was reviewed for concatenated request data (none), and injection strings were sent in tests 45–47.
+- **A limitation the AI reported rather than overclaimed.** The parallel-request test (49) can't prove race safety on local `wrangler dev`, and `QUALITY_GATE_REVIEW.md` says so.
 
 ## Verified by me (the student)
 

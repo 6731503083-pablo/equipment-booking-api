@@ -65,6 +65,20 @@ cat > "$OUT" <<EOF
 
 EOF
 
+# The instructor's curl_test_guide.md, steps 1–9, with the same requests and order.
+# Runs first on an empty table: step 7 depends on the state step 5 leaves, and step 9 empties it again.
+section "Instructor cURL Quick Test Guide (curl_test_guide.md, steps 1–9)"
+run "Guide 1: List equipment" 200 GET /equipment
+run "Guide 2: List bookings" 200 GET /bookings
+run "Guide 3: Create a booking" 201 POST /bookings '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Class presentation"}'
+BOOKING_ID=$(echo "$LAST_BODY" | json_field id)
+run "Guide 4: Get one booking" 200 GET "/bookings/$BOOKING_ID"
+run "Guide 5: Update a booking (moved to 12:00–14:00Z)" 200 PATCH "/bookings/$BOOKING_ID" '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T12:00:00.000Z","endAt":"2026-10-20T14:00:00.000Z","purpose":"Updated class presentation"}'
+run "Guide 6: Invalid time range" 400 POST /bookings '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-21T11:00:00.000Z","endAt":"2026-10-21T09:00:00.000Z","purpose":"Invalid time range test"}'
+run "Guide 7: Overlapping booking (12:30–13:30Z vs 12:00–14:00Z)" 409 POST /bookings '{"equipmentId":"eq-1","borrowerName":"Suda Dee","startAt":"2026-10-20T12:30:00.000Z","endAt":"2026-10-20T13:30:00.000Z","purpose":"Conflict test"}'
+run "Guide 8: Missing booking" 404 GET /bookings/not-found
+run "Guide 9: Delete a booking" 204 DELETE "/bookings/$BOOKING_ID"
+
 BOOKING='{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Class presentation"}'
 
 section "Read equipment"

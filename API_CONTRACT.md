@@ -87,7 +87,7 @@ Every error response has this shape:
 
 ### Why these status codes
 
-- **400 vs 409.** 400 means *the request itself is wrong* and would be wrong whenever it was sent. 409 means *the request is valid, but it conflicts with data that exists right now*. If the other booking is deleted, the same request succeeds (test 35 shows this). The client fixes a 400 by correcting the request and a 409 by choosing another time.
+- **400 vs 409.** 400 means *the request itself is wrong* and would be wrong whenever it was sent. 409 means *the request is valid, but it conflicts with data that exists right now*. If the other booking is deleted, the same request succeeds (test 44 shows this). The client fixes a 400 by correcting the request and a 409 by choosing another time.
 - **Unknown `equipmentId` → 400, not 404.** The URL (`/bookings`) exists. What's wrong is a value inside the body, so this is invalid input. A 404 would wrongly suggest the endpoint itself is missing.
 - **PATCH order: 404 before 400.** If the booking id doesn't exist, there is nothing to validate the body against, so the 404 is returned first.
 - **DELETE → 204, no body.** Nothing is left to return. Deleting the same id again returns 404, because it no longer exists.

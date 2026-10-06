@@ -18,7 +18,7 @@ npm run dev           # API on http://localhost:8787/api
 In a second terminal:
 
 ```bash
-npm run test:curl     # runs 40 curl cases, writes TEST_EVIDENCE.md
+npm run test:curl     # runs 49 curl cases, writes TEST_EVIDENCE.md
 npm run typecheck     # TypeScript check
 ```
 
@@ -60,7 +60,7 @@ All errors are returned as `{ "error": "..." }`. The full contract, business rul
 | Schema / ERD | [SCHEMA.md](SCHEMA.md) |
 | AI log | [AI_LOG.md](AI_LOG.md) |
 | Quality Gate review | [QUALITY_GATE_REVIEW.md](QUALITY_GATE_REVIEW.md) |
-| Test evidence (40 cases) + Base API URL | [TEST_EVIDENCE.md](TEST_EVIDENCE.md) |
+| Test evidence (49 cases, incl. all 9 steps of curl_test_guide.md) + Base API URL | [TEST_EVIDENCE.md](TEST_EVIDENCE.md) |
 | Pre-review snapshot | git tag `v1-snapshot`; its test run is in [docs/v1-test-results.md](docs/v1-test-results.md) |
 
 ## Project layout
@@ -75,7 +75,8 @@ docs/                     v1 probes and v1 test run (Quality Gate "before" evide
 
 ## Test summary
 
-The latest run is **40 passed, 0 failed** against `http://localhost:8787/api`. It covers:
+The latest run is **49 passed, 0 failed** against `http://localhost:8787/api`. It covers:
+- all 9 steps of the instructor's [curl_test_guide.md](curl_test_guide.md), unchanged;
 - create, read, update and delete;
 - validation errors (400);
 - not found (404);
