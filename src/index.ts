@@ -1,4 +1,6 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
+import { validateCreate, validateUpdate, type BookingInput } from './validation';
 
 type Bindings = {
   DB: D1Database;
@@ -17,6 +19,16 @@ type BookingRow = {
 
 const app = new Hono<{ Bindings: Bindings }>().basePath('/api');
 
+// Every error leaves the API as { "error": "..." } — including ones Hono would
+// otherwise answer with plain text (unknown route, uncaught exception).
+const fail = (c: Context, status: ContentfulStatusCode, message: string) => c.json({ error: message }, status);
+
+app.notFound((c) => fail(c, 404, `Route not found: ${c.req.method} ${c.req.path}`));
+app.onError((err, c) => {
+  console.error(err);
+  return fail(c, 500, 'Internal server error');
+});
+
 function toBooking(row: BookingRow) {
   return {
     id: row.id,
@@ -30,23 +42,36 @@ function toBooking(row: BookingRow) {
   };
 }
 
+const INVALID_JSON = Symbol('invalid json');
+
+async function readJson(c: Context): Promise<unknown> {
+  try {
+    return await c.req.json();
+  } catch {
+    return INVALID_JSON;
+  }
+}
+
 async function equipmentExists(db: D1Database, id: string) {
   const row = await db.prepare('SELECT id FROM equipment WHERE id = ?').bind(id).first();
   return row !== null;
 }
 
-// Two intervals [a, b) and [c, d) overlap when a < d AND c < b.
-async function hasOverlap(db: D1Database, equipmentId: string, startAt: string, endAt: string, excludeId: string | null) {
-  const row = await db
-    .prepare(
-      `SELECT id FROM bookings
-       WHERE equipment_id = ? AND start_at < ? AND ? < end_at AND id != ?
-       LIMIT 1`,
-    )
-    .bind(equipmentId, endAt, startAt, excludeId ?? '')
-    .first();
-  return row !== null;
+function findBooking(db: D1Database, id: string) {
+  return db.prepare('SELECT * FROM bookings WHERE id = ?').bind(id).first<BookingRow>();
 }
+
+// Overlap rule, used inside the INSERT and UPDATE below. Bookings are half-open
+// intervals [start, end): [a, b) and [c, d) overlap exactly when a < d AND c < b.
+// So 09:00–11:00 and 11:00–12:00 do NOT overlap (back-to-back is allowed).
+//
+// The check sits in the same SQL statement as the write (WHERE NOT EXISTS ...), so
+// SQLite checks and writes in one step. With a separate SELECT then INSERT, two
+// simultaneous requests could both see "no conflict" and both insert.
+const NO_OVERLAP = `NOT EXISTS (
+  SELECT 1 FROM bookings other
+  WHERE other.equipment_id = ? AND other.id != ? AND other.start_at < ? AND ? < other.end_at
+)`;
 
 app.get('/equipment', async (c) => {
   const { results } = await c.env.DB.prepare('SELECT id, name, location FROM equipment ORDER BY id').all();
@@ -54,90 +79,88 @@ app.get('/equipment', async (c) => {
 });
 
 app.get('/bookings', async (c) => {
-  const { results } = await c.env.DB.prepare('SELECT * FROM bookings ORDER BY start_at').all<BookingRow>();
+  const { results } = await c.env.DB.prepare('SELECT * FROM bookings ORDER BY start_at, id').all<BookingRow>();
   return c.json(results.map(toBooking));
 });
 
 app.get('/bookings/:id', async (c) => {
-  const row = await c.env.DB.prepare('SELECT * FROM bookings WHERE id = ?').bind(c.req.param('id')).first<BookingRow>();
-  if (!row) return c.json({ error: 'Booking not found' }, 404);
+  const row = await findBooking(c.env.DB, c.req.param('id'));
+  if (!row) return fail(c, 404, `Booking not found: ${c.req.param('id')}`);
   return c.json(toBooking(row));
 });
 
 app.post('/bookings', async (c) => {
-  const body = await c.req.json();
-  const { equipmentId, borrowerName, startAt, endAt, purpose } = body;
+  const body = await readJson(c);
+  if (body === INVALID_JSON) return fail(c, 400, 'Request body must be valid JSON');
 
-  if (!equipmentId || !borrowerName || !startAt || !endAt || !purpose) {
-    return c.json({ error: 'equipmentId, borrowerName, startAt, endAt and purpose are required' }, 400);
-  }
-  if (isNaN(Date.parse(startAt)) || isNaN(Date.parse(endAt))) {
-    return c.json({ error: 'startAt and endAt must be valid dates' }, 400);
-  }
-  if (startAt >= endAt) {
-    return c.json({ error: 'startAt must be before endAt' }, 400);
-  }
-  if (!(await equipmentExists(c.env.DB, equipmentId))) {
-    return c.json({ error: 'equipmentId does not exist' }, 400);
-  }
-  if (await hasOverlap(c.env.DB, equipmentId, startAt, endAt, null)) {
-    return c.json({ error: 'This equipment is already booked for an overlapping time' }, 409);
+  const v = validateCreate(body);
+  if (!v.ok) return fail(c, 400, v.error);
+  const b = v.value;
+
+  if (!(await equipmentExists(c.env.DB, b.equipmentId))) {
+    return fail(c, 400, `equipmentId does not exist: ${b.equipmentId}`);
   }
 
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
-  await c.env.DB.prepare(
+  const row = await c.env.DB.prepare(
     `INSERT INTO bookings (id, equipment_id, borrower_name, start_at, end_at, purpose, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+     SELECT ?, ?, ?, ?, ?, ?, ?, ?
+     WHERE ${NO_OVERLAP}
+     RETURNING *`,
   )
-    .bind(id, equipmentId, borrowerName, startAt, endAt, purpose, now, now)
-    .run();
+    .bind(id, b.equipmentId, b.borrowerName, b.startAt, b.endAt, b.purpose, now, now, b.equipmentId, id, b.endAt, b.startAt)
+    .first<BookingRow>();
 
-  const row = await c.env.DB.prepare('SELECT * FROM bookings WHERE id = ?').bind(id).first<BookingRow>();
-  return c.json(toBooking(row!), 201);
+  if (!row) return fail(c, 409, `Equipment ${b.equipmentId} is already booked for an overlapping time`);
+  return c.json(toBooking(row), 201);
 });
 
 app.patch('/bookings/:id', async (c) => {
   const id = c.req.param('id');
-  const existing = await c.env.DB.prepare('SELECT * FROM bookings WHERE id = ?').bind(id).first<BookingRow>();
-  if (!existing) return c.json({ error: 'Booking not found' }, 404);
+  const existing = await findBooking(c.env.DB, id);
+  if (!existing) return fail(c, 404, `Booking not found: ${id}`);
 
-  const body = await c.req.json();
-  const merged = {
-    equipmentId: body.equipmentId ?? existing.equipment_id,
-    borrowerName: body.borrowerName ?? existing.borrower_name,
-    startAt: body.startAt ?? existing.start_at,
-    endAt: body.endAt ?? existing.end_at,
-    purpose: body.purpose ?? existing.purpose,
+  const body = await readJson(c);
+  if (body === INVALID_JSON) return fail(c, 400, 'Request body must be valid JSON');
+
+  const current: BookingInput = {
+    equipmentId: existing.equipment_id,
+    borrowerName: existing.borrower_name,
+    startAt: existing.start_at,
+    endAt: existing.end_at,
+    purpose: existing.purpose,
   };
+  const v = validateUpdate(body, current);
+  if (!v.ok) return fail(c, 400, v.error);
+  const b = v.value;
 
-  if (isNaN(Date.parse(merged.startAt)) || isNaN(Date.parse(merged.endAt))) {
-    return c.json({ error: 'startAt and endAt must be valid dates' }, 400);
-  }
-  if (merged.startAt >= merged.endAt) {
-    return c.json({ error: 'startAt must be before endAt' }, 400);
-  }
-  if (!(await equipmentExists(c.env.DB, merged.equipmentId))) {
-    return c.json({ error: 'equipmentId does not exist' }, 400);
-  }
-  if (await hasOverlap(c.env.DB, merged.equipmentId, merged.startAt, merged.endAt, id)) {
-    return c.json({ error: 'This equipment is already booked for an overlapping time' }, 409);
+  if (b.equipmentId !== current.equipmentId && !(await equipmentExists(c.env.DB, b.equipmentId))) {
+    return fail(c, 400, `equipmentId does not exist: ${b.equipmentId}`);
   }
 
-  await c.env.DB.prepare(
-    `UPDATE bookings SET equipment_id = ?, borrower_name = ?, start_at = ?, end_at = ?, purpose = ?, updated_at = ?
-     WHERE id = ?`,
+  // `other.id != ?` excludes this booking from its own overlap check, so moving
+  // a booking by 30 minutes doesn't count as a conflict with itself.
+  const row = await c.env.DB.prepare(
+    `UPDATE bookings
+     SET equipment_id = ?, borrower_name = ?, start_at = ?, end_at = ?, purpose = ?, updated_at = ?
+     WHERE id = ? AND ${NO_OVERLAP}
+     RETURNING *`,
   )
-    .bind(merged.equipmentId, merged.borrowerName, merged.startAt, merged.endAt, merged.purpose, new Date().toISOString(), id)
-    .run();
+    .bind(b.equipmentId, b.borrowerName, b.startAt, b.endAt, b.purpose, new Date().toISOString(), id, b.equipmentId, id, b.endAt, b.startAt)
+    .first<BookingRow>();
 
-  const row = await c.env.DB.prepare('SELECT * FROM bookings WHERE id = ?').bind(id).first<BookingRow>();
-  return c.json(toBooking(row!));
+  if (!row) {
+    // No row updated: either a conflict, or the booking was deleted after we read it.
+    if (!(await findBooking(c.env.DB, id))) return fail(c, 404, `Booking not found: ${id}`);
+    return fail(c, 409, `Equipment ${b.equipmentId} is already booked for an overlapping time`);
+  }
+  return c.json(toBooking(row));
 });
 
 app.delete('/bookings/:id', async (c) => {
   const result = await c.env.DB.prepare('DELETE FROM bookings WHERE id = ?').bind(c.req.param('id')).run();
-  if (result.meta.changes === 0) return c.json({ error: 'Booking not found' }, 404);
+  if (result.meta.changes === 0) return fail(c, 404, `Booking not found: ${c.req.param('id')}`);
   return c.body(null, 204);
 });
 
