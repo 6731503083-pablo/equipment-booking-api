@@ -1,0 +1,15 @@
+Probes run against the v1 snapshot (commit tagged v1-snapshot), BASE_URL=http://localhost:8787/api
+Existing booking: eq-1, 2026-10-20T09:00:00.000Z -> 2026-10-20T11:00:00.000Z
+
+$ curl -s -X POST $B/bookings -H 'Content-Type: application/json' -d '{bad json'
+Internal Server Error [500]
+
+$ curl -s -X POST $B/bookings ... -d '{"equipmentId":"eq-1",...,"startAt":"2026-10-20T15:00:00+07:00","endAt":"2026-10-20T17:00:00+07:00",...}'
+(15:00+07:00 = 08:00Z, 17:00+07:00 = 10:00Z -> overlaps 09:00Z-11:00Z)
+{"id":"3c0b253f-...","equipmentId":"eq-1","borrowerName":"Tz","startAt":"2026-10-20T15:00:00+07:00","endAt":"2026-10-20T17:00:00+07:00",...} [201]
+
+$ curl -s -X POST $B/bookings ... -d '{"equipmentId":"eq-1","borrowerName":123,...,"purpose":true}'
+{"id":"1b018041-...","borrowerName":"123.0",...,"purpose":"1.0",...} [201]
+
+$ curl -s $B/nope
+404 Not Found [404]
