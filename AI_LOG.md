@@ -50,4 +50,4 @@
 
 Notes on anything I changed or disagreed with:
 
--
+- None
