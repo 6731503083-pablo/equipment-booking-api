@@ -2,7 +2,7 @@
 
 Review against the instructor's [quality_gate.md](quality_gate.md), used at the two points it asks for:
 
-1. **After the first version.** Commit `1dd3879`, tagged `v1-snapshot` (view it with `git show v1-snapshot:src/index.ts`). This review produced the six findings below.
+1. **After the first version.** Commit `a8b9b27`, tagged `v1-snapshot` (view it with `git show v1-snapshot:src/index.ts`). This review produced the six findings below.
 2. **Final check before submission.** The full checklist, ticked with evidence, is at the end of this file.
 
 ## Quality Gate Review Record
