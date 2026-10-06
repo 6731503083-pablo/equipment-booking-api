@@ -2,9 +2,12 @@
 
 Midterm practical lab test. A REST API for booking shared faculty equipment (projectors, cameras, meeting rooms) that refuses overlapping bookings for the same item.
 
-**Stack:** Cloudflare Workers · Hono · TypeScript · D1 (SQLite)
-**Base API URL used for testing:** `http://localhost:8787/api` (local, [TEST_EVIDENCE.md](TEST_EVIDENCE.md))
-**Live deployment:** `https://equipment-booking-api.phyo2lay.workers.dev/api` (also 49/49, [docs/live-test-results.md](docs/live-test-results.md))
+| | |
+|---|---|
+| **Stack** | Cloudflare Workers · Hono · TypeScript · D1 (SQLite) |
+| **Live API (Cloudflare)** | <https://equipment-booking-api.phyo2lay.workers.dev/api> |
+| **Local API** | `http://localhost:8787/api` |
+| **Test results** | 49 / 49 passed, both [locally](TEST_EVIDENCE.md) and [on the live API](docs/live-test-results.md) |
 
 ## Run it
 
@@ -54,16 +57,17 @@ All errors are returned as `{ "error": "..." }`. The full contract, business rul
 
 ## Submission contents
 
-| Requirement | File |
-|---|---|
-| Runnable source + run instructions | [src/](src/), [migrations/](migrations/), this README |
-| API contract | [API_CONTRACT.md](API_CONTRACT.md) |
-| Schema / ERD | [SCHEMA.md](SCHEMA.md) |
-| AI log | [AI_LOG.md](AI_LOG.md) |
-| Quality Gate review | [QUALITY_GATE_REVIEW.md](QUALITY_GATE_REVIEW.md) |
-| Test evidence (49 cases, incl. all 9 steps of curl_test_guide.md) + Base API URL | [TEST_EVIDENCE.md](TEST_EVIDENCE.md) |
-| Live deployment test run | [docs/live-test-results.md](docs/live-test-results.md) |
-| Pre-review snapshot | git tag `v1-snapshot`; its test run is in [docs/v1-test-results.md](docs/v1-test-results.md) |
+| Requirement | Where | Notes |
+|---|---|---|
+| Source code | [src/](src/) · [migrations/](migrations/) | Routes, validation, schema and seed data |
+| Run instructions | [Run it](#run-it) (above) | |
+| API contract | [API_CONTRACT.md](API_CONTRACT.md) | Endpoints, rules, status-code reasoning, assumptions |
+| Schema / ERD | [SCHEMA.md](SCHEMA.md) | ER diagram, data dictionary, constraints, indexes |
+| AI log | [AI_LOG.md](AI_LOG.md) | |
+| Quality Gate review | [QUALITY_GATE_REVIEW.md](QUALITY_GATE_REVIEW.md) | 6 findings, final checklist, decision |
+| Test evidence + Base API URL | [TEST_EVIDENCE.md](TEST_EVIDENCE.md) | 49 cases, including all 9 steps of [curl_test_guide.md](curl_test_guide.md) |
+| Live API test run | [docs/live-test-results.md](docs/live-test-results.md) | Same 49 cases against the Cloudflare deployment |
+| Pre-review snapshot | Tag [`v1-snapshot`](https://github.com/6731503083-pablo/equipment-booking-api/tree/v1-snapshot) | Its test run: [docs/v1-test-results.md](docs/v1-test-results.md) |
 
 ## Project layout
 
