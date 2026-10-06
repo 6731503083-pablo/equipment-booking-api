@@ -39,7 +39,7 @@
 ## Verified by me (the student)
 
 
-- [x] Ran `npm install`, `npm run db:reset`, `npm run dev` and `npm run test:curl` on my machine and got 40/40
+- [x] Ran `npm install`, `npm run db:reset`, `npm run dev` and `npm run test:curl` on my machine and got 49/49
 - [x] Ran at least one curl request by hand and compared it with `TEST_EVIDENCE.md`
 - [x] Read `src/index.ts` and `src/validation.ts` and can explain each route
 - [x] Can explain the overlap condition `existing.start < new.end AND new.start < existing.end`, and why back-to-back is allowed
