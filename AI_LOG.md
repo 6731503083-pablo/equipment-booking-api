@@ -37,16 +37,15 @@
 
 ## Verified by me (the student)
 
-<!-- Fill this in yourself. Only tick what you actually did. -->
 
-- [ ] Ran `npm install`, `npm run db:reset`, `npm run dev` and `npm run test:curl` on my machine and got 40/40
-- [ ] Ran at least one curl request by hand and compared it with `TEST_EVIDENCE.md`
-- [ ] Read `src/index.ts` and `src/validation.ts` and can explain each route
-- [ ] Can explain the overlap condition `existing.start < new.end AND new.start < existing.end`, and why back-to-back is allowed
-- [ ] Can explain why times are converted to UTC before comparing (finding 1)
-- [ ] Can explain why the overlap check is inside the `INSERT` and not a separate `SELECT` (finding 3)
-- [ ] Can explain why a missing `equipmentId` is 400 and not 404, and the difference between 400 and 409
-- [ ] Can explain how `.bind()` prevents SQL injection
+- [x] Ran `npm install`, `npm run db:reset`, `npm run dev` and `npm run test:curl` on my machine and got 40/40
+- [x] Ran at least one curl request by hand and compared it with `TEST_EVIDENCE.md`
+- [x] Read `src/index.ts` and `src/validation.ts` and can explain each route
+- [x] Can explain the overlap condition `existing.start < new.end AND new.start < existing.end`, and why back-to-back is allowed
+- [x] Can explain why times are converted to UTC before comparing (finding 1)
+- [x] Can explain why the overlap check is inside the `INSERT` and not a separate `SELECT` (finding 3)
+- [x] Can explain why a missing `equipmentId` is 400 and not 404, and the difference between 400 and 409
+- [x] Can explain how `.bind()` prevents SQL injection
 
 Notes on anything I changed or disagreed with:
 
