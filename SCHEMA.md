@@ -36,25 +36,7 @@ erDiagram
     }
 ```
 
-<details>
-<summary>Plain-text version (for viewers without Mermaid)</summary>
-
-```
-┌──────────────────┐            ┌──────────────────────────┐
-│ equipment        │            │ bookings                 │
-├──────────────────┤            ├──────────────────────────┤
-│ PK id            │──┤├────○<──│ PK id                    │
-│    name          │  1    0..* │ FK equipment_id          │
-│    location      │            │    borrower_name         │
-└──────────────────┘            │    start_at              │
-                                │    end_at                │
-                                │    purpose               │
-                                │    created_at            │
-                                │    updated_at            │
-                                └──────────────────────────┘
-```
-
-</details>
+**In words:** `equipment` **(1)** ──< **(0..\*)** `bookings`, linked by `bookings.equipment_id` → `equipment.id`.
 
 ---
 
