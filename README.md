@@ -3,7 +3,8 @@
 Midterm practical lab test. A REST API for booking shared faculty equipment (projectors, cameras, meeting rooms) that refuses overlapping bookings for the same item.
 
 **Stack:** Cloudflare Workers · Hono · TypeScript · D1 (SQLite)
-**Base API URL used for testing:** `http://localhost:8787/api`
+**Base API URL used for testing:** `http://localhost:8787/api` (local, [TEST_EVIDENCE.md](TEST_EVIDENCE.md))
+**Live deployment:** `https://equipment-booking-api.phyo2lay.workers.dev/api` (also 49/49, [docs/live-test-results.md](docs/live-test-results.md))
 
 ## Run it
 
@@ -61,6 +62,7 @@ All errors are returned as `{ "error": "..." }`. The full contract, business rul
 | AI log | [AI_LOG.md](AI_LOG.md) |
 | Quality Gate review | [QUALITY_GATE_REVIEW.md](QUALITY_GATE_REVIEW.md) |
 | Test evidence (49 cases, incl. all 9 steps of curl_test_guide.md) + Base API URL | [TEST_EVIDENCE.md](TEST_EVIDENCE.md) |
+| Live deployment test run | [docs/live-test-results.md](docs/live-test-results.md) |
 | Pre-review snapshot | git tag `v1-snapshot`; its test run is in [docs/v1-test-results.md](docs/v1-test-results.md) |
 
 ## Project layout

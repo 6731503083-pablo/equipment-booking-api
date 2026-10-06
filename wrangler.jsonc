@@ -7,8 +7,8 @@
 		{
 			"binding": "DB",
 			"database_name": "equipment-booking-db",
-			// Local-only placeholder. Replace with the id from `wrangler d1 create` before any remote deploy.
-			"database_id": "00000000-0000-4000-8000-000000000001",
+			// Remote D1 database created with `wrangler d1 create equipment-booking-db`.
+			"database_id": "3e0516a1-eaed-441f-8b63-a8afb93994f8",
 			"migrations_dir": "migrations"
 		}
 	]

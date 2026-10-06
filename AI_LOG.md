@@ -17,6 +17,7 @@
 | 4 | Make the JSON in the markdown files easier to read. | Changed the test script to pretty-print request and response bodies, and regenerated both evidence files. |
 | 5 | Here are the instructor's Quality Gate checklist and cURL test guide. Align the work with them. | Added the guide's 9 steps unchanged to the test suite: they pass on both versions, and the final suite is 49/49 (v1: 41/49). Restructured `QUALITY_GATE_REVIEW.md` to the gate's areas and table format, and added a final run through the checklist and a submission decision. |
 | 6 | Reformat the schema document to common documentation standards. | Rewrote `SCHEMA.md` with a crow's-foot ER diagram, a data dictionary per table, and relationship, constraint, index, field-mapping and seed-data sections. It first checked on a scratch database that deleting equipment that still has bookings is blocked, before documenting it. |
+| 7 | Host the API on Cloudflare. | Created the remote D1 database, set its id in `wrangler.jsonc`, applied the migration remotely and deployed to `https://equipment-booking-api.phyo2lay.workers.dev/api`. The first live run hit 4 Cloudflare edge errors (`1042` / `1104`) while the new URL was still propagating. A rerun passed 49/49. The bookings left by the test run were then deleted, so the instructor's guide starts on an empty table. |
 
 
 ## What the AI produced, and what was used
